@@ -275,7 +275,7 @@ impl AssetLoader<Map> for TiledMapLoader {
             meshes,
             layers,
             tile_size,
-            image_folder: asset_path.parent().unwrap().to_str().unwrap().to_string(),
+            image_folder: asset_path.parent().unwrap().to_owned(),
         };
 
         Ok(map)

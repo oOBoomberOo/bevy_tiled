@@ -9,6 +9,7 @@ use bevy::{
 use crate::{TileMapChunk, TILE_MAP_PIPELINE_HANDLE};
 use glam::Vec2;
 use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct Tile {
@@ -43,7 +44,7 @@ pub struct Map {
     pub meshes: Vec<(u32, u32, Mesh)>,
     pub layers: Vec<Layer>,
     pub tile_size: Vec2,
-    pub image_folder: String,
+    pub image_folder: PathBuf,
 }
 
 impl Map {
@@ -104,7 +105,7 @@ pub struct TiledMapComponents {
     pub map_asset: Handle<Map>,
     pub materials: HashMap<u32, Handle<ColorMaterial>>,
     pub origin: Transform,
-    pub center: TiledMapCenter
+    pub center: TiledMapCenter,
 }
 
 impl Default for TiledMapComponents {
@@ -113,7 +114,7 @@ impl Default for TiledMapComponents {
             map_asset: Handle::default(),
             materials: HashMap::default(),
             center: TiledMapCenter::default(),
-            origin : Transform::default()
+            origin: Transform::default(),
         }
     }
 }
@@ -210,8 +211,9 @@ pub fn process_loaded_tile_maps(
         for (_, _, _, mut materials_map, _) in &mut query.iter() {
             for tileset in &map.map.tilesets {
                 if !materials_map.contains_key(&tileset.first_gid) {
-                    let texture_path =
-                        map.image_folder.clone() + "/" + &tileset.images.first().unwrap().source;
+                    let texture_path = map
+                        .image_folder
+                        .join(&tileset.images.first().unwrap().source);
                     let texture_handle = asset_server.load(texture_path).unwrap();
                     materials_map.insert(tileset.first_gid, materials.add(texture_handle.into()));
                 }
